@@ -1,0 +1,5 @@
+database
+database/db.sql
+node_modules/
+server/config.js
+server/db.js
