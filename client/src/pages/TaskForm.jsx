@@ -1,20 +1,47 @@
 import { Formik, Form } from "formik";
-import { createTaskRequest } from "../api/tasks.api";
+import { useTasks } from "../context/TaskContext";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function TaskForm() {
+  const { createTaskRequest, getTaskRequest, updateTaskRequest } = useTasks();
+  const [task, setTask] = useState({title: "", description: ""});
+  const params = useParams();
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const loadTask = async () => {
+      if (params.id) {
+        try {
+          const task = await getTaskRequest(params.id);
+        setTask({
+          title: task.title,
+          description: task.description,
+        });
+        } catch (error) {
+          console.error(error)
+        }
+      }
+    };
+    loadTask();
+  }, []);
+
   return (
     <div>
+      <h1>{params.id ? "Edit Task" : "Create Task"}</h1>
       <Formik
-        initialValues={{
-          title: "",
-          description: "",
-        }}
+        initialValues={task}
+        enableReinitialize={true}
         onSubmit={async (values, actions) => {
           console.log(values);
           try {
-            const response = await createTaskRequest(values);
-            console.log(response);
-            actions.resetForm()
+            if (params.id){
+              updateTaskRequest(params.id, values)
+            } else {
+              createTaskRequest(values)
+            }
+            navigate("/")
+            setTask({title: "", description: ""})
           } catch (error) {
             console.error(error);
           }
@@ -37,7 +64,9 @@ function TaskForm() {
               onChange={handleChange}
               value={values.description}
             />
-            <button type="submit" disabled={isSubmitting}>{isSubmitting ? "Saving..." : "Save"}</button>
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save"}
+            </button>
           </Form>
         )}
       </Formik>

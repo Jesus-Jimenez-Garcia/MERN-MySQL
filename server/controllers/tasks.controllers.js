@@ -31,6 +31,7 @@ export const getTask = async (req, res) => {
 export const createTasks = async (req, res) => {
   try {
     const { title, description } = req.body;
+
     const [result] = await pool.query(
       "INSERT INTO tasks(title, description) VALUES (?,?)",
       [title, description]
@@ -73,6 +74,7 @@ export const deleteTasks = async (req, res) => {
 
     await pool.query("DELETE from tasks WHERE id = ?", [req.params.id]);
 
+    console.log(result);
     res.status(204);
   } catch (error) {
     return res.status(500).json({ message: error.message });
