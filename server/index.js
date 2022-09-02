@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { PORT } from "./config.js";
+import * as dotenv from "dotenv"
+dotenv.config({path:"./.env"})
 
 import indexRoutes from "./routes/index.routes.js";
 import taskRoutes from "./routes/tasks.routes.js";
@@ -13,5 +14,5 @@ app.use(express.json());
 app.use(indexRoutes);
 app.use(taskRoutes);
 
-app.listen(PORT);
-console.log(`Server in running on port ${PORT}`);
+app.listen(process.env.PORT);
+console.log(`Server in running on port ${process.env.PORT}`);
