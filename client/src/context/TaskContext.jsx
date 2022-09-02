@@ -6,7 +6,7 @@ const TaskContext = createContext();
 export const useTasks = () => {
   const context = useContext(TaskContext);
   if (!context) {
-    throw new Error("useTasks must be usedd within a TaskContextPprovider");
+    throw new Error("useTasks must be used within a TaskContextProvider");
   } else {
     return context;
   }
@@ -56,10 +56,30 @@ export const TaskContextProvider = ({ children }) => {
     }
   };
 
+  const toggleTaskDone = async (id, done) => {
+    try {
+      const response = await axios.put(`http://localhost:4000/tasks/${id}`, {
+        done: done,
+      });
+      console.log(response);
+      tasks.map((task) =>
+        task.id === id
+          ? task.done === 0
+            ? (task.done = 1)
+            : (task.done = 0)
+          : task.done
+      );
+      setTasks([...tasks]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <TaskContext.Provider
       value={{
         tasks,
+        toggleTaskDone,
         getTasksRequest,
         deleteTaskRequest,
         createTaskRequest,
